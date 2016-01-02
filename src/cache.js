@@ -8,7 +8,6 @@ const DEFAULT_OPTIONS = {
 	'rejectOnNull': false
 };
 
-
 export class RedisCache {
 	constructor(client, options = {}) {
 		if(!client) throw new Error('redis client required');
@@ -60,9 +59,8 @@ export class RedisCache {
 	**/
 	set(key, value, options = {}) {
 		options = extend(true, this._options, options);
-		return new Promise(function(resolve, reject) {
-			if(options.json)
-				value = this._stringifyJSON(value);
+		return new Promise((resolve, reject) => {
+			if(options.json) value = this._stringifyJSON(value);
 			this._client.set(key, value, (err, reply) => {
 				if(err) return reject(err);
 				if(options.expire)
@@ -76,7 +74,7 @@ export class RedisCache {
 	 * Delete a key from the cache
 	**/
 	del(key) {
-		return new Promise(function(resolve, reject) {
+		return new Promise((resolve, reject) => {
 			this._client.del(key, (err, reply) => {
 				if(err) return reject(err);
 				return resolve(reply);

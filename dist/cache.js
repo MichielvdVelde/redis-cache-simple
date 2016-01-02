@@ -41,9 +41,8 @@ var RedisCache = exports.RedisCache = (function () {
 		value: function _parseJSON(value) {
 			try {
 				value = JSON.parse(value);
-			} catch (e) {} finally {
-				return value;
-			}
+			} catch (e) {}
+			return value;
 		}
 
 		/**
@@ -55,9 +54,8 @@ var RedisCache = exports.RedisCache = (function () {
 		value: function _stringifyJSON(value) {
 			try {
 				value = JSON.stringify(value);
-			} catch (e) {} finally {
-				return value;
-			}
+			} catch (e) {}
+			return value;
 		}
 
 		/**
@@ -89,14 +87,14 @@ var RedisCache = exports.RedisCache = (function () {
 	}, {
 		key: 'set',
 		value: function set(key, value) {
+			var _this2 = this;
+
 			var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 			options = (0, _extend2.default)(true, this._options, options);
 			return new Promise(function (resolve, reject) {
-				var _this2 = this;
-
-				if (options.json) value = this._stringifyJSON(value);
-				this._client.set(key, value, function (err, reply) {
+				if (options.json) value = _this2._stringifyJSON(value);
+				_this2._client.set(key, value, function (err, reply) {
 					if (err) return reject(err);
 					if (options.expire) _this2._client.expire(key, options.expire);
 					return resolve(reply);
@@ -111,8 +109,10 @@ var RedisCache = exports.RedisCache = (function () {
 	}, {
 		key: 'del',
 		value: function del(key) {
+			var _this3 = this;
+
 			return new Promise(function (resolve, reject) {
-				this._client.del(key, function (err, reply) {
+				_this3._client.del(key, function (err, reply) {
 					if (err) return reject(err);
 					return resolve(reply);
 				});
@@ -126,10 +126,10 @@ var RedisCache = exports.RedisCache = (function () {
 	}, {
 		key: 'ttl',
 		value: function ttl(key) {
-			var _this3 = this;
+			var _this4 = this;
 
 			return new Promise(function (resolve, reject) {
-				_this3._client.ttl(key, function (err, reply) {
+				_this4._client.ttl(key, function (err, reply) {
 					if (err) return reject(err);
 					return resolve(reply);
 				});
@@ -143,10 +143,10 @@ var RedisCache = exports.RedisCache = (function () {
 	}, {
 		key: 'exists',
 		value: function exists(key) {
-			var _this4 = this;
+			var _this5 = this;
 
 			return new Promise(function (resolve, reject) {
-				_this4._client.exists(key, function (err, reply) {
+				_this5._client.exists(key, function (err, reply) {
 					if (err) reject(err);
 					return resolve(reply === 1 ? true : false);
 				});
