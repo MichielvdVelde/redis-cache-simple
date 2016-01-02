@@ -24,9 +24,7 @@ export class RedisCache {
 			value = JSON.parse(value);
 		}
 		catch(e) { }
-		finally {
-			return value;
-		}
+		return value;
 	}
 
 	/**
@@ -37,9 +35,7 @@ export class RedisCache {
 			value = JSON.stringify(value);
 		}
 		catch(e) { }
-		finally {
-			return value;
-		}
+		return value;
 	}
 
 	/**
