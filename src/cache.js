@@ -9,7 +9,7 @@ const DEFAULT_OPTIONS = {
 };
 
 
-export class RedisCache {
+export default class RedisCache {
 	constructor(client, options = {}) {
 		this._client = client;
 		this._options = extend(true, DEFAULT_OPTIONS, options);

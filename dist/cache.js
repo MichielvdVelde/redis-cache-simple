@@ -5,7 +5,6 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.RedisCache = undefined;
 
 var _extend = require('extend');
 
@@ -21,7 +20,7 @@ var DEFAULT_OPTIONS = {
 	'rejectOnNull': false
 };
 
-var RedisCache = exports.RedisCache = (function () {
+var RedisCache = (function () {
 	function RedisCache(client) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -117,7 +116,43 @@ var RedisCache = exports.RedisCache = (function () {
 				});
 			});
 		}
+
+		/**
+   * Get the Time-To-Live (TTL) for a key
+  **/
+
+	}, {
+		key: 'ttl',
+		value: function ttl(key) {
+			var _this3 = this;
+
+			return new Promise(function (resolve, reject) {
+				_this3._client.ttl(key, function (err, reply) {
+					if (err) return reject(err);
+					return resolve(reply);
+				});
+			});
+		}
+
+		/**
+   * Check if a key exists
+  **/
+
+	}, {
+		key: 'exists',
+		value: function exists(key) {
+			var _this4 = this;
+
+			return new Promise(function (resolve, reject) {
+				_this4._client.exists(key, function (err, reply) {
+					if (err) reject(err);
+					return resolve(reply === 1 ? true : false);
+				});
+			});
+		}
 	}]);
 
 	return RedisCache;
 })();
+
+exports.default = RedisCache;
