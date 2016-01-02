@@ -5,6 +5,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.RedisCache = undefined;
 
 var _extend = require('extend');
 
@@ -20,12 +21,13 @@ var DEFAULT_OPTIONS = {
 	'rejectOnNull': false
 };
 
-var RedisCache = (function () {
+var RedisCache = exports.RedisCache = (function () {
 	function RedisCache(client) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 		_classCallCheck(this, RedisCache);
 
+		if (!client) throw new Error('redis client required');
 		this._client = client;
 		this._options = (0, _extend2.default)(true, DEFAULT_OPTIONS, options);
 	}
@@ -154,5 +156,3 @@ var RedisCache = (function () {
 
 	return RedisCache;
 })();
-
-exports.default = RedisCache;
