@@ -12,7 +12,7 @@ _Not published yet_
 # Example
 
 ```js
-const RedisCache = require('redis-cache');
+const RedisCache = require('redis-cache-simple');
 const client = require('redis').createClient();
 
 // These are the default options
