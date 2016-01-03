@@ -105,4 +105,28 @@ export class RedisCache {
 			});
 		});
 	}
+
+	/**
+	 * Set expiry time on a key
+	**/
+	expire(key) {
+		return new Promise((resolve, reject) => {
+			this._client.expire(key, (err, reply) => {
+				if(err) return reject(err);
+				return resolve((reply === 1) ? true : false);
+			});
+		});
+	}
+
+	/**
+	 * Remove expiry on a key
+	**/
+	persist(key) {
+		return new Promise((resolve, reject) => {
+			this._client.persist(key, (err, reply) => {
+				if(err) return reject(err);
+				return resolve((reply == 1) ? true : false);
+			});
+		});
+	}
 }
