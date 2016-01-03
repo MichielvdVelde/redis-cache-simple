@@ -65,7 +65,7 @@ export class RedisCache {
 				if(err) return reject(err);
 				if(options.expire)
 					this._client.expire(key, options.expire);
-				return resolve(reply);
+				return resolve((reply === 'OK') ? true : false);
 			});
 		});
 	}
