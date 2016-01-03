@@ -5,7 +5,8 @@ import { default as extend } from 'extend';
 const DEFAULT_OPTIONS = {
 	'expire': 60 * 60, // 1hr
 	'json': true,
-	'rejectOnNull': false
+	'rejectOnNull': false,
+	'prefix': null
 };
 
 export class RedisCache {
@@ -38,10 +39,20 @@ export class RedisCache {
 	}
 
 	/**
+	 * Prefixes the key
+	**/
+	_prefix(key, prefix = this._options.prefix) {
+		if(prefix !== null)
+			key = prefix + key;
+		return key;
+	}
+
+	/**
 	 * Fetch a key from the cache
 	**/
 	fetch(key, options = {}) {
 		options = extend(true, this._options, options);
+		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			this._client.get(key, (err, reply) => {
 				if(err) return reject(err);
@@ -59,6 +70,7 @@ export class RedisCache {
 	**/
 	set(key, value, options = {}) {
 		options = extend(true, this._options, options);
+		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			if(options.json) value = this._stringifyJSON(value);
 			this._client.set(key, value, (err, reply) => {
@@ -74,6 +86,7 @@ export class RedisCache {
 	 * Delete a key from the cache
 	**/
 	del(key) {
+		key = this._prefix(key);
 		return new Promise((resolve, reject) => {
 			this._client.del(key, (err, reply) => {
 				if(err) return reject(err);
@@ -86,6 +99,7 @@ export class RedisCache {
    * Get the Time-To-Live (TTL) for a key
   **/
   ttl(key) {
+		key = this._prefix(key);
     return new Promise((resolve, reject) => {
       this._client.ttl(key, (err, reply) => {
         if(err) return reject(err);
@@ -98,6 +112,7 @@ export class RedisCache {
 	 * Check if a key exists
 	**/
 	exists(key) {
+		key = this._prefix(key);
 		return new Promise((resolve, reject) => {
 			this._client.exists(key, (err, reply) => {
 				if(err) return reject(err);
@@ -110,6 +125,7 @@ export class RedisCache {
 	 * Set expiry time on a key
 	**/
 	expire(key) {
+		key = this._prefix(key);
 		return new Promise((resolve, reject) => {
 			this._client.expire(key, (err, reply) => {
 				if(err) return reject(err);
@@ -122,6 +138,7 @@ export class RedisCache {
 	 * Remove expiry on a key
 	**/
 	persist(key) {
+		key = this._prefix(key);
 		return new Promise((resolve, reject) => {
 			this._client.persist(key, (err, reply) => {
 				if(err) return reject(err);
