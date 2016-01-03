@@ -100,7 +100,7 @@ export class RedisCache {
 	exists(key) {
 		return new Promise((resolve, reject) => {
 			this._client.exists(key, (err, reply) => {
-				if(err) reject(err);
+				if(err) return reject(err);
 				return resolve((reply === 1) ? true : false);
 			});
 		});
