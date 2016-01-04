@@ -169,7 +169,8 @@ var cache2 = cache.split({ 'expire': 300 }, false);
 
 # Changelog
 
-* v0.0.1 - v0.0.2 - 4 January 2016
+* v0.0.1 - v0.0.3 - 4 January 2016
+  * (0.0.3) Add updated ES5 file
   * (0.0.2) Improved readme
   * (0.0.2) Added `RedisCache.split()`
   * (0.0.2) `RedisCache.ttl()` now rejects if `rejectOnNull` is `true` and the key does not exist
