@@ -13,7 +13,7 @@ export class RedisCache {
 	constructor(client, options = {}) {
 		if(!client) throw new Error('redis client required');
 		this._client = client;
-		this._options = extend(true, DEFAULT_OPTIONS, options);
+		this._options = extend(DEFAULT_OPTIONS, options);
 	}
 
 	/**
@@ -51,7 +51,7 @@ export class RedisCache {
 	 * Fetch a key from the cache
 	**/
 	fetch(key, options = {}) {
-		options = extend(true, this._options, options);
+		options = extend(this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			this._client.get(key, (err, reply) => {
@@ -69,7 +69,7 @@ export class RedisCache {
 	 * Set a key in the cache
 	**/
 	set(key, value, options = {}) {
-		options = extend(true, this._options, options);
+		options = extend(this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			if(options.json) value = this._stringifyJSON(value);
@@ -124,10 +124,10 @@ export class RedisCache {
 	/**
 	 * Set expiry time on a key
 	**/
-	expire(key) {
+	expire(key, expire = this._options.expire) {
 		key = this._prefix(key);
 		return new Promise((resolve, reject) => {
-			this._client.expire(key, (err, reply) => {
+			this._client.expire(key, expire, (err, reply) => {
 				if(err) return reject(err);
 				return resolve((reply === 1) ? true : false);
 			});
@@ -151,7 +151,7 @@ export class RedisCache {
 	 * Split the class into a new instance using the same Redis client
 	**/
 	split(options = {}, useDefaultOptions = false) {
-		options = extend(true, (useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
+		options = extend((useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
 		return new RedisCache(this._client, options);
 	}
 }
