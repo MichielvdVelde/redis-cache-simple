@@ -1,6 +1,6 @@
 'use strict';
 
-import { default as extend } from 'extend';
+import extend from 'extend';
 
 const DEFAULT_OPTIONS = {
 	'expire': 60 * 60, // 1hr
