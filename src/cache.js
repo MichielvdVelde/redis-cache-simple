@@ -1,6 +1,6 @@
 'use strict';
 
-import { default as extend } from 'extend';
+import extend from 'extend';
 
 const DEFAULT_OPTIONS = {
 	'expire': 60 * 60, // 1hr
@@ -13,7 +13,7 @@ export class RedisCache {
 	constructor(client, options = {}) {
 		if(!client) throw new Error('redis client required');
 		this._client = client;
-		this._options = extend(DEFAULT_OPTIONS, options);
+		this._options = extend({}, DEFAULT_OPTIONS, options);
 	}
 
 	/**
@@ -51,7 +51,7 @@ export class RedisCache {
 	 * Fetch a key from the cache
 	**/
 	fetch(key, options = {}) {
-		options = extend(this._options, options);
+		options = extend({}, this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			this._client.get(key, (err, reply) => {
@@ -66,10 +66,17 @@ export class RedisCache {
 	}
 
 	/**
+	 * Convenience method for fetch()
+	**/
+	get(key, options = {}) {
+		return this.fetch(key, options);
+	}
+
+	/**
 	 * Set a key in the cache
 	**/
 	set(key, value, options = {}) {
-		options = extend(this._options, options);
+		options = extend({}, this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			if(options.json) value = this._stringifyJSON(value);
@@ -103,6 +110,8 @@ export class RedisCache {
     return new Promise((resolve, reject) => {
       this._client.ttl(key, (err, reply) => {
         if(err) return reject(err);
+				if(this._options.rejectOnNull && reply === -2)
+					return reject(new Error('key does not exist'));
         return resolve(reply);
       });
     });
@@ -150,8 +159,8 @@ export class RedisCache {
 	/**
 	 * Split the class into a new instance using the same Redis client
 	**/
-	// split(options = {}, useDefaultOptions = false) {
-	// 	options = extend((useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
-	// 	return new RedisCache(this._client, options);
-	// }
+	split(options = {}, useDefaultOptions = false) {
+		options = extend({}, (useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
+		return new RedisCache(this._client, options);
+	}
 }
