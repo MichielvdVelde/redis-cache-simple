@@ -13,7 +13,7 @@ export class RedisCache {
 	constructor(client, options = {}) {
 		if(!client) throw new Error('redis client required');
 		this._client = client;
-		this._options = extend(DEFAULT_OPTIONS, options);
+		this._options = extend({}, DEFAULT_OPTIONS, options);
 	}
 
 	/**
@@ -51,7 +51,7 @@ export class RedisCache {
 	 * Fetch a key from the cache
 	**/
 	fetch(key, options = {}) {
-		options = extend(this._options, options);
+		options = extend({}, this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			this._client.get(key, (err, reply) => {
@@ -69,7 +69,7 @@ export class RedisCache {
 	 * Set a key in the cache
 	**/
 	set(key, value, options = {}) {
-		options = extend(this._options, options);
+		options = extend({}, this._options, options);
 		key = this._prefix(key, options.prefix);
 		return new Promise((resolve, reject) => {
 			if(options.json) value = this._stringifyJSON(value);
@@ -146,4 +146,3 @@ export class RedisCache {
 			});
 		});
 	}
-}
