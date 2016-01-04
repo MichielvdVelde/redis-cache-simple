@@ -146,12 +146,4 @@ export class RedisCache {
 			});
 		});
 	}
-
-	/**
-	 * Split the class into a new instance using the same Redis client
-	**/
-	// split(options = {}, useDefaultOptions = false) {
-	// 	options = extend((useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
-	// 	return new RedisCache(this._client, options);
-	// }
 }
