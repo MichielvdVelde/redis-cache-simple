@@ -110,6 +110,8 @@ export class RedisCache {
     return new Promise((resolve, reject) => {
       this._client.ttl(key, (err, reply) => {
         if(err) return reject(err);
+				if(this._options.rejectOnNull && reply === -2)
+					return reject(new Error('key does not exist'));
         return resolve(reply);
       });
     });
