@@ -3,23 +3,24 @@
 Simple cache using Redis. It uses Redis' `EXPIRE` command to set key expiry times,
 so you don't have to worry about checking cache validity.
 
-**Note: Ths code has not been tested yet!**
-
 # Install
 
-_Not published yet_
+```
+npm Install redis-cache-simple
+```
 
 # Example
 
 ```js
-const RedisCache = require('redis-cache-simple');
+const RedisCache = require('redis-cache-simple').RedisCache;
 const client = require('redis').createClient();
 
 // These are the default options
 let options = {
 	'expire': 60 * 60, // in seconds, 1hr
 	'json': true,
-	'rejectOnNull': false
+	'rejectOnNull': false,
+	'prefix': null
 };
 
 // Create the cache instance
@@ -59,8 +60,19 @@ cache.fetch('some-key')
   * `key`: The key to check
 * `cache.exists(key)`: Check if a key exists
   * `key`: The key to check
+* `cache.expire(key, expire = options.expire)`: Set key expiry time
+  * `key`: The key
+  * `expire`: The expiry time in seconds. Defaults to `expire` in options if not set
+* `cache.persist(key)`: Persist the key (remove expire timer)
+  * `key`: The key
 
-## License
+# Changelog
+
+* v0.0.1 - 4 January 2016
+  * Published on npm
+  * First release
+
+# License
 
 Copyright 2016 Michiel van der Velde.
 

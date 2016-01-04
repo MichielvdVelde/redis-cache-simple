@@ -18,10 +18,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var DEFAULT_OPTIONS = {
 	'expire': 60 * 60, // 1hr
 	'json': true,
-	'rejectOnNull': false
+	'rejectOnNull': false,
+	'prefix': null
 };
 
-var RedisCache = exports.RedisCache = (function () {
+var RedisCache = (function () {
 	function RedisCache(client) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -29,7 +30,7 @@ var RedisCache = exports.RedisCache = (function () {
 
 		if (!client) throw new Error('redis client required');
 		this._client = client;
-		this._options = (0, _extend2.default)(true, DEFAULT_OPTIONS, options);
+		this._options = (0, _extend2.default)(DEFAULT_OPTIONS, options);
 	}
 
 	/**
@@ -59,6 +60,19 @@ var RedisCache = exports.RedisCache = (function () {
 		}
 
 		/**
+   * Prefixes the key
+  **/
+
+	}, {
+		key: '_prefix',
+		value: function _prefix(key) {
+			var prefix = arguments.length <= 1 || arguments[1] === undefined ? this._options.prefix : arguments[1];
+
+			if (prefix !== null) key = prefix + key;
+			return key;
+		}
+
+		/**
    * Fetch a key from the cache
   **/
 
@@ -69,7 +83,8 @@ var RedisCache = exports.RedisCache = (function () {
 
 			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-			options = (0, _extend2.default)(true, this._options, options);
+			options = (0, _extend2.default)(this._options, options);
+			key = this._prefix(key, options.prefix);
 			return new Promise(function (resolve, reject) {
 				_this._client.get(key, function (err, reply) {
 					if (err) return reject(err);
@@ -91,13 +106,14 @@ var RedisCache = exports.RedisCache = (function () {
 
 			var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-			options = (0, _extend2.default)(true, this._options, options);
+			options = (0, _extend2.default)(this._options, options);
+			key = this._prefix(key, options.prefix);
 			return new Promise(function (resolve, reject) {
 				if (options.json) value = _this2._stringifyJSON(value);
 				_this2._client.set(key, value, function (err, reply) {
 					if (err) return reject(err);
 					if (options.expire) _this2._client.expire(key, options.expire);
-					return resolve(reply);
+					return resolve(reply === 'OK' ? true : false);
 				});
 			});
 		}
@@ -111,6 +127,7 @@ var RedisCache = exports.RedisCache = (function () {
 		value: function del(key) {
 			var _this3 = this;
 
+			key = this._prefix(key);
 			return new Promise(function (resolve, reject) {
 				_this3._client.del(key, function (err, reply) {
 					if (err) return reject(err);
@@ -128,6 +145,7 @@ var RedisCache = exports.RedisCache = (function () {
 		value: function ttl(key) {
 			var _this4 = this;
 
+			key = this._prefix(key);
 			return new Promise(function (resolve, reject) {
 				_this4._client.ttl(key, function (err, reply) {
 					if (err) return reject(err);
@@ -145,14 +163,64 @@ var RedisCache = exports.RedisCache = (function () {
 		value: function exists(key) {
 			var _this5 = this;
 
+			key = this._prefix(key);
 			return new Promise(function (resolve, reject) {
 				_this5._client.exists(key, function (err, reply) {
-					if (err) reject(err);
+					if (err) return reject(err);
 					return resolve(reply === 1 ? true : false);
 				});
 			});
 		}
+
+		/**
+   * Set expiry time on a key
+  **/
+
+	}, {
+		key: 'expire',
+		value: function expire(key) {
+			var _this6 = this;
+
+			var _expire = arguments.length <= 1 || arguments[1] === undefined ? this._options.expire : arguments[1];
+
+			key = this._prefix(key);
+			return new Promise(function (resolve, reject) {
+				_this6._client.expire(key, _expire, function (err, reply) {
+					if (err) return reject(err);
+					return resolve(reply === 1 ? true : false);
+				});
+			});
+		}
+
+		/**
+   * Remove expiry on a key
+  **/
+
+	}, {
+		key: 'persist',
+		value: function persist(key) {
+			var _this7 = this;
+
+			key = this._prefix(key);
+			return new Promise(function (resolve, reject) {
+				_this7._client.persist(key, function (err, reply) {
+					if (err) return reject(err);
+					return resolve(reply == 1 ? true : false);
+				});
+			});
+		}
+
+		/**
+   * Split the class into a new instance using the same Redis client
+  **/
+		// split(options = {}, useDefaultOptions = false) {
+		// 	options = extend((useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
+		// 	return new RedisCache(this._client, options);
+		// }
+
 	}]);
 
 	return RedisCache;
 })();
+
+exports.RedisCache = RedisCache;
