@@ -66,6 +66,13 @@ export class RedisCache {
 	}
 
 	/**
+	 * Convenience method for fetch()
+	**/
+	get(key, options = {}) {
+		return this.fetch(key, options);
+	}
+
+	/**
 	 * Set a key in the cache
 	**/
 	set(key, value, options = {}) {
