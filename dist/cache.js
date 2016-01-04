@@ -30,7 +30,7 @@ var RedisCache = (function () {
 
 		if (!client) throw new Error('redis client required');
 		this._client = client;
-		this._options = (0, _extend2.default)(DEFAULT_OPTIONS, options);
+		this._options = (0, _extend2.default)({}, DEFAULT_OPTIONS, options);
 	}
 
 	/**
@@ -83,7 +83,7 @@ var RedisCache = (function () {
 
 			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-			options = (0, _extend2.default)(this._options, options);
+			options = (0, _extend2.default)({}, this._options, options);
 			key = this._prefix(key, options.prefix);
 			return new Promise(function (resolve, reject) {
 				_this._client.get(key, function (err, reply) {
@@ -93,6 +93,18 @@ var RedisCache = (function () {
 					return resolve(reply);
 				});
 			});
+		}
+
+		/**
+   * Convenience method for fetch()
+  **/
+
+	}, {
+		key: 'get',
+		value: function get(key) {
+			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+			return this.fetch(key, options);
 		}
 
 		/**
@@ -106,7 +118,7 @@ var RedisCache = (function () {
 
 			var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-			options = (0, _extend2.default)(this._options, options);
+			options = (0, _extend2.default)({}, this._options, options);
 			key = this._prefix(key, options.prefix);
 			return new Promise(function (resolve, reject) {
 				if (options.json) value = _this2._stringifyJSON(value);
@@ -149,6 +161,7 @@ var RedisCache = (function () {
 			return new Promise(function (resolve, reject) {
 				_this4._client.ttl(key, function (err, reply) {
 					if (err) return reject(err);
+					if (_this4._options.rejectOnNull && reply === -2) return reject(new Error('key does not exist'));
 					return resolve(reply);
 				});
 			});
@@ -213,11 +226,16 @@ var RedisCache = (function () {
 		/**
    * Split the class into a new instance using the same Redis client
   **/
-		// split(options = {}, useDefaultOptions = false) {
-		// 	options = extend((useDefaultOptions) ? DEFAULT_OPTIONS : this._options, options);
-		// 	return new RedisCache(this._client, options);
-		// }
 
+	}, {
+		key: 'split',
+		value: function split() {
+			var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+			var useDefaultOptions = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+			options = (0, _extend2.default)({}, useDefaultOptions ? DEFAULT_OPTIONS : this._options, options);
+			return new RedisCache(this._client, options);
+		}
 	}]);
 
 	return RedisCache;
