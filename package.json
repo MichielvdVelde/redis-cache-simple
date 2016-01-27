@@ -1,14 +1,12 @@
 {
   "name": "redis-cache-simple",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple Redis cache store",
   "main": "dist/cache.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": { },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MichielvdVelde/redis-cache.git"
+    "url": "git+https://github.com/MichielvdVelde/redis-cache-simple.git"
   },
   "keywords": [
     "redis",
@@ -18,9 +16,9 @@
   "author": "Michiel van der Velde <michiel@michielvdvelde.nl>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MichielvdVelde/redis-cache/issues"
+    "url": "https://github.com/MichielvdVelde/redis-cache-simple/issues"
   },
-  "homepage": "https://github.com/MichielvdVelde/redis-cache#readme",
+  "homepage": "https://github.com/MichielvdVelde/redis-cache-simple#readme",
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",
     "gulp": "^3.9.0",
